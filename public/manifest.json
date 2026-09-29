@@ -1,0 +1,20 @@
+{
+  "name": "Sistem Presensi Guru & Tendik",
+  "short_name": "Presensi Guru",
+  "description": "Aplikasi Presensi Guru Real-time dengan Geofencing GPS & Biometric Face Scan",
+  "start_url": "/guru",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f172a",
+  "theme_color": "#0d9488",
+  "categories": ["education", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

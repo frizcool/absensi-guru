@@ -1,0 +1,50 @@
+# ==============================================================================
+# LARAVEL ROOT SECURITY & REWRITE SHIELD (UNTUK CPANEL SHARED HOSTING)
+# ==============================================================================
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # 1. BLOKIR MUTLAK FILE SENSITIF DENGAN STATUS 403 FORBIDDEN
+    # Mencegah pencurian kredensial database dan file konfigurasi privat
+    RewriteRule ^\.env.*$ - [F,L,NC]
+    RewriteRule ^artisan$ - [F,L,NC]
+    RewriteRule ^(composer|package)\.(json|lock)$ - [F,L,NC]
+    RewriteRule ^(webpack|vite)\.config\..*$ - [F,L,NC]
+    RewriteRule ^phpunit\.xml$ - [F,L,NC]
+    RewriteRule ^storage/logs/.*$ - [F,L,NC]
+    RewriteRule ^database/.*\.sqlite.*$ - [F,L,NC]
+    RewriteRule ^app/.*$ - [F,L,NC]
+    RewriteRule ^bootstrap/.*$ - [F,L,NC]
+    RewriteRule ^config/.*$ - [F,L,NC]
+    RewriteRule ^vendor/.*$ - [F,L,NC]
+
+    # 2. ARAHKAN SEMUA PERMINTAAN SECARA TRANSPARAN KE SUBDIREKTORI public/
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Blokir seluruh file tersembunyi (dot files seperti .git, .env)
+<FilesMatch "^\.">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Blokir langsung ekstensi file sensitif
+<FilesMatch "\.(env|log|sql|sqlite|sqlite3|db|json|lock|yml|yaml|ini|sh|bak|backup)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Matikan perambanan direktori
+Options -Indexes

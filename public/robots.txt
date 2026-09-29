@@ -1,0 +1,23 @@
+# Robots.txt untuk Sistem Presensi Guru
+User-agent: *
+
+# Halaman publik yang diizinkan untuk diindeks
+Allow: /
+Allow: /sekolahku
+Allow: /sekolahku/live-display
+Allow: /manifest.json
+Allow: /icons/
+Allow: /css/
+Allow: /js/
+Allow: /storage/
+Allow: /sitemap.xml
+
+# Cegah bot merayapi panel login internal, dashboard authenticated, dan API feed
+Disallow: /guru/
+Disallow: /sekolahku/panel/
+Disallow: /laporan/
+Disallow: /sekolahku/live-display/feed
+Disallow: /up
+
+# Peta Situs (Sitemap)
+Sitemap: /sitemap.xml
