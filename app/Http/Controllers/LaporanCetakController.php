@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\LaporanPresensiBulananExport;
+use App\Exports\LaporanRincianPresensiExport;
 use App\Models\Guru;
 use App\Models\HariLibur;
 use App\Models\PengaturanSekolah;
@@ -9,6 +11,7 @@ use App\Models\Presensi;
 use App\Models\Shift;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class LaporanCetakController extends Controller
 {
@@ -248,5 +251,49 @@ class LaporanCetakController extends Controller
             'rincian' => $rincian,
             'stats' => $stats,
         ]);
+    }
+
+    public function exportBulanan(Request $request): BinaryFileResponse
+    {
+        $user = $request->user();
+        if (! $user || (! $user->can('View:LaporanPresensiPage') && ! $user->hasAnyRole(['super_admin', 'admin', 'kepala_sekolah']))) {
+            abort(403, 'Akses Ditolak: Anda tidak memiliki wewenang untuk mengekspor dokumen rekapitulasi kedinasan ini.');
+        }
+
+        $bulan = (int) $request->query('bulan', now()->month);
+        $tahun = (int) $request->query('tahun', now()->year);
+        $statusKepegawaian = $request->query('status_kepegawaian', 'semua');
+        $shiftId = $request->query('shift_id');
+        $search = (string) $request->query('search', '');
+
+        return (new LaporanPresensiBulananExport(
+            bulan: $bulan,
+            tahun: $tahun,
+            statusKepegawaian: $statusKepegawaian,
+            shiftId: $shiftId ? (int) $shiftId : null,
+            search: $search,
+        ))->download();
+    }
+
+    public function exportRincian(Request $request): BinaryFileResponse
+    {
+        $user = $request->user();
+        if (! $user || (! $user->can('View:RincianPresensiPage') && ! $user->can('View:LaporanPresensiPage') && ! $user->hasAnyRole(['super_admin', 'admin', 'kepala_sekolah']))) {
+            abort(403, 'Akses Ditolak: Anda tidak memiliki wewenang untuk mengekspor dokumen rincian presensi ini.');
+        }
+
+        $bulan = (int) $request->query('bulan', now()->month);
+        $tahun = (int) $request->query('tahun', now()->year);
+        $statusKepegawaian = $request->query('statusKepegawaian') ?: $request->query('status_kepegawaian', 'semua');
+        $shiftId = $request->query('shiftId') ?: $request->query('shift_id');
+        $search = (string) $request->query('search', '');
+
+        return (new LaporanRincianPresensiExport(
+            bulan: $bulan,
+            tahun: $tahun,
+            statusKepegawaian: $statusKepegawaian,
+            shiftId: $shiftId ? (int) $shiftId : null,
+            search: $search,
+        ))->download();
     }
 }

@@ -350,4 +350,86 @@ class LaporanPresensiTest extends TestCase
                 'search' => 'Budi',
             ]));
     }
+
+    public function test_super_admin_can_export_laporan_bulanan_excel(): void
+    {
+        $this->actingAs($this->superAdmin);
+        Filament::setCurrentPanel(Filament::getPanel('admin'));
+
+        Presensi::create([
+            'guru_id' => $this->guru->id,
+            'shift_id' => $this->shift->id,
+            'tanggal' => '2026-09-01',
+            'jam_masuk' => '2026-09-01 06:55:00',
+            'jam_pulang' => '2026-09-01 14:05:00',
+            'status_masuk' => 'tepat_waktu',
+            'status_kehadiran' => 'hadir',
+        ]);
+
+        $component = Livewire::test(LaporanPresensiPage::class)
+            ->set('bulan', 9)
+            ->set('tahun', 2026);
+
+        $response = $component->call('exportExcel');
+        $this->assertNotNull($response);
+    }
+
+    public function test_super_admin_can_export_laporan_bulanan_excel_via_route(): void
+    {
+        $this->actingAs($this->superAdmin);
+
+        $url = route('laporan.export-bulanan', [
+            'bulan' => 9,
+            'tahun' => 2026,
+            'status_kepegawaian' => 'semua',
+        ]);
+
+        $response = $this->get($url);
+        $response->assertOk();
+        $this->assertStringContainsString('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', (string) $response->headers->get('content-type'));
+    }
+
+    public function test_admin_can_export_rincian_presensi_excel(): void
+    {
+        $this->actingAs($this->admin);
+        Filament::setCurrentPanel(Filament::getPanel('admin'));
+
+        Presensi::create([
+            'guru_id' => $this->guru->id,
+            'shift_id' => $this->shift->id,
+            'tanggal' => '2026-09-01',
+            'jam_masuk' => '2026-09-01 06:55:00',
+            'jam_pulang' => '2026-09-01 14:05:00',
+            'status_masuk' => 'tepat_waktu',
+            'status_kehadiran' => 'hadir',
+        ]);
+
+        $component = Livewire::test(RincianPresensiPage::class)
+            ->set('bulan', 9)
+            ->set('tahun', 2026);
+
+        $response = $component->call('exportExcel');
+        $this->assertNotNull($response);
+    }
+
+    public function test_admin_can_export_rincian_presensi_excel_via_route(): void
+    {
+        $this->actingAs($this->admin);
+
+        $url = route('laporan.export-rincian', [
+            'bulan' => 9,
+            'tahun' => 2026,
+            'statusKepegawaian' => 'semua',
+        ]);
+
+        $response = $this->get($url);
+        $response->assertOk();
+        $this->assertStringContainsString('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', (string) $response->headers->get('content-type'));
+    }
+
+    public function test_guest_cannot_access_export_routes(): void
+    {
+        $this->get(route('laporan.export-bulanan'))->assertRedirect('/sekolahku');
+        $this->get(route('laporan.export-rincian'))->assertRedirect('/sekolahku');
+    }
 }

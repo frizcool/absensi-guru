@@ -162,6 +162,18 @@
             color: #ef4444 !important;
         }
 
+        .btn-rincian-excel {
+            background: #059669;
+            color: #ffffff !important;
+            border-color: #047857;
+            box-shadow: 0 2px 6px rgba(5, 150, 105, 0.2);
+        }
+        .btn-rincian-excel:hover {
+            background: #047857;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35);
+            transform: translateY(-1px);
+        }
+
         /* KPI STAT METRICS */
         .rincian-stats-grid {
             display: grid;
@@ -642,6 +654,11 @@
                     <x-filament::icon icon="heroicon-o-printer" class="w-4 h-4" />
                     <span>Cetak Dokumen (PDF)</span>
                 </a>
+
+                <button type="button" wire:click="exportExcel" class="btn-rincian btn-rincian-excel" title="Unduh File Rincian Presensi Excel (.xlsx)">
+                    <x-filament::icon icon="heroicon-o-arrow-down-tray" class="w-4 h-4" />
+                    <span>Unduh Excel</span>
+                </button>
 
                 <a href="{{ $this->urlLaporan }}" class="btn-rincian btn-rincian-secondary" title="Kembali ke Rekapitulasi Matriks Presensi">
                     <x-filament::icon icon="heroicon-o-arrow-left" class="w-4 h-4" />

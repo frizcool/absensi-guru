@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Exports\LaporanRincianPresensiExport;
 use App\Models\Presensi;
 use App\Models\Shift;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Livewire\WithPagination;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class RincianPresensiPage extends Page
 {
@@ -255,5 +257,27 @@ class RincianPresensiPage extends Page
             'alpa' => 'Alpa',
             default => str($presensi->status_kehadiran)->replace('_', ' ')->title()->toString(),
         };
+    }
+
+    public function exportExcel(): BinaryFileResponse
+    {
+        return (new LaporanRincianPresensiExport(
+            bulan: $this->bulan,
+            tahun: $this->tahun,
+            statusKepegawaian: $this->statusKepegawaian,
+            shiftId: $this->shiftId,
+            search: $this->search,
+        ))->download();
+    }
+
+    public function getUrlExportExcelProperty(): string
+    {
+        return route('laporan.export-rincian', array_filter([
+            'bulan' => $this->bulan,
+            'tahun' => $this->tahun,
+            'statusKepegawaian' => $this->statusKepegawaian,
+            'shiftId' => $this->shiftId,
+            'search' => $this->search !== '' ? $this->search : null,
+        ], fn ($val) => $val !== null && $val !== ''));
     }
 }

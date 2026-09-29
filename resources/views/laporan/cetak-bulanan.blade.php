@@ -246,6 +246,24 @@
             background-color: #059669;
         }
 
+        .btn-excel {
+            background-color: #059669;
+            color: #fff;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 13px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-excel:hover {
+            background-color: #047857;
+        }
+
         .btn-back {
             background-color: #4b5563;
             color: #fff;
@@ -284,6 +302,10 @@
             <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
             Cetak / Simpan PDF
         </button>
+        <a href="{{ route('laporan.export-bulanan', ['bulan' => $bulan, 'tahun' => $tahun, 'status_kepegawaian' => $statusKepegawaian, 'shift_id' => request('shift_id'), 'search' => request('search')]) }}" class="btn-excel" title="Unduh File Excel (.xlsx)">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            Unduh Excel
+        </a>
         <a href="javascript:window.close()" class="btn-back">Tutup</a>
     </div>
 

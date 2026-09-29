@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Exports\LaporanPresensiBulananExport;
 use App\Models\Guru;
 use App\Models\HariLibur;
 use App\Models\PengaturanSekolah;
@@ -11,9 +12,6 @@ use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Carbon\Carbon;
 use Filament\Facades\Filament;
 use Filament\Pages\Page;
-use OpenSpout\Common\Entity\Row;
-use OpenSpout\Writer\XLSX\Options;
-use OpenSpout\Writer\XLSX\Writer;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class LaporanPresensiPage extends Page
@@ -108,69 +106,14 @@ class LaporanPresensiPage extends Page
 
     public function exportExcel(): BinaryFileResponse
     {
-        $matriks = $this->matriksLaporan;
-        $namaBulan = $this->daftarBulan[$this->bulan];
-        $filename = "Rekap_Presensi_Guru_{$namaBulan}_{$this->tahun}.xlsx";
-        $tempPath = storage_path('app/temp_'.time().'_'.$filename);
-
-        $options = new Options;
-        $writer = new Writer($options);
-        $writer->openToFile($tempPath);
-
-        // 1. Header Informasi
-        $writer->addRow(Row::fromValues([strtoupper($this->pengaturan->nama_sekolah)]));
-        $writer->addRow(Row::fromValues(['LAPORAN REKAPITULASI PRESENSI GURU & TENAGA KEPENDIDIKAN']));
-        $writer->addRow(Row::fromValues(["Periode: {$matriks['periode_label']}"]));
-        $writer->addRow(Row::fromValues([])); // Blank row
-
-        // 2. Header Tabel
-        $headerCols = ['No', 'Nama Guru', 'NIP', 'Status'];
-        for ($d = 1; $d <= $matriks['jumlah_hari']; $d++) {
-            $headerCols[] = (string) $d;
-        }
-        $headerCols[] = 'H';
-        $headerCols[] = 'T';
-        $headerCols[] = 'DL';
-        $headerCols[] = 'S';
-        $headerCols[] = 'I';
-        $headerCols[] = 'C';
-        $headerCols[] = 'A';
-        $headerCols[] = '% Kehadiran';
-
-        $writer->addRow(Row::fromValues($headerCols));
-
-        // 3. Baris Data Guru
-        foreach ($matriks['rows'] as $index => $row) {
-            $dataCols = [
-                $index + 1,
-                $row['guru']->nama,
-                $row['guru']->nip ?: '-',
-                strtoupper($row['guru']->status_kepegawaian),
-            ];
-
-            for ($d = 1; $d <= $matriks['jumlah_hari']; $d++) {
-                $dataCols[] = $row['kehadiran'][$d]['kode'];
-            }
-
-            $dataCols[] = $row['total_hadir'];
-            $dataCols[] = $row['total_terlambat'];
-            $dataCols[] = $row['total_dinas_luar'];
-            $dataCols[] = $row['total_sakit'];
-            $dataCols[] = $row['total_izin'];
-            $dataCols[] = $row['total_cuti'];
-            $dataCols[] = $row['total_alpa'];
-            $dataCols[] = $row['persentase'].'%';
-
-            $writer->addRow(Row::fromValues($dataCols));
-        }
-
-        // 4. Keterangan Simbol
-        $writer->addRow(Row::fromValues([]));
-        $writer->addRow(Row::fromValues(['Keterangan: H = Hadir Tepat Waktu, T = Terlambat, DL = Tugas Luar/Dinas Luar, S = Sakit, I = Izin, C = Cuti, A = Alpa, L = Libur/Minggu']));
-
-        $writer->close();
-
-        return response()->download($tempPath, $filename)->deleteFileAfterSend(true);
+        return (new LaporanPresensiBulananExport(
+            bulan: $this->bulan,
+            tahun: $this->tahun,
+            statusKepegawaian: $this->statusKepegawaian,
+            shiftId: $this->shiftId,
+            search: $this->search,
+            matriks: $this->matriksLaporan,
+        ))->download();
     }
 
     public function getMatriksLaporanProperty(): array
