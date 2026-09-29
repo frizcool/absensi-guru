@@ -184,14 +184,13 @@ class RincianPresensiPage extends Page
 
     public function getUrlCetakProperty(): string
     {
-        return self::getUrl([
+        return route('laporan.cetak-rincian', array_filter([
             'bulan' => $this->bulan,
             'tahun' => $this->tahun,
             'statusKepegawaian' => $this->statusKepegawaian,
             'shiftId' => $this->shiftId,
-            'search' => $this->search,
-            'cetak' => 1,
-        ], panel: 'admin');
+            'search' => $this->search !== '' ? $this->search : null,
+        ], fn ($val) => $val !== null && $val !== ''));
     }
 
     public function getStatusKehadiranLabel(Presensi $presensi): string

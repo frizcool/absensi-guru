@@ -28,9 +28,10 @@ Route::middleware('guest')->group(function (): void {
 Route::get('/sekolahku/live-display', [LiveDisplayController::class, 'index'])->name('school.live-display');
 Route::get('/sekolahku/live-display/feed', [LiveDisplayController::class, 'feed'])->middleware('throttle:60,1')->name('school.live-display.feed');
 
-// Cetak Laporan Bulanan Kedinasan (PDF / Print View)
+// Cetak Laporan Bulanan & Rincian Kedinasan (PDF / Print View)
 Route::middleware('auth')->group(function (): void {
     Route::get('/laporan/cetak-bulanan', [LaporanCetakController::class, 'cetakBulanan'])->name('laporan.cetak-bulanan');
+    Route::get('/laporan/cetak-rincian', [LaporanCetakController::class, 'cetakRincian'])->name('laporan.cetak-rincian');
 });
 
 // Peta Situs XML (Sitemap untuk Mesin Pencari)

@@ -6,6 +6,7 @@ use App\Models\Guru;
 use App\Models\HariLibur;
 use App\Models\PengaturanSekolah;
 use App\Models\Presensi;
+use App\Models\Shift;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -157,6 +158,95 @@ class LaporanCetakController extends Controller
             'totalHariEfektif' => $totalHariEfektif,
             'rows' => $rows,
             'statusKepegawaian' => $statusKepegawaian,
+        ]);
+    }
+
+    public function cetakRincian(Request $request)
+    {
+        $user = $request->user();
+        if (! $user || (! $user->can('View:RincianPresensiPage') && ! $user->can('View:LaporanPresensiPage') && ! $user->hasAnyRole(['super_admin', 'admin', 'kepala_sekolah']))) {
+            abort(403, 'Akses Ditolak: Anda tidak memiliki wewenang untuk mencetak dokumen rincian presensi ini.');
+        }
+
+        $bulan = (int) $request->query('bulan', now()->month);
+        $tahun = (int) $request->query('tahun', now()->year);
+        $statusKepegawaian = $request->query('statusKepegawaian') ?: $request->query('status_kepegawaian', 'semua');
+        $shiftId = $request->query('shiftId') ?: $request->query('shift_id');
+        $search = (string) $request->query('search', '');
+
+        $currentYear = (int) now()->year;
+        $bulan = min(max($bulan, 1), 12);
+        $tahun = min(max($tahun, $currentYear - 2), $currentYear + 1);
+        $status = in_array($statusKepegawaian, ['pns', 'pppk', 'non_pns'], true) ? $statusKepegawaian : null;
+        $search = mb_substr(trim($search), 0, 100);
+
+        $shift = ($shiftId && Shift::query()->whereKey($shiftId)->exists())
+            ? Shift::find($shiftId)
+            : null;
+
+        $daftarBulan = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret',
+            4 => 'April', 5 => 'Mei', 6 => 'Juni',
+            7 => 'Juli', 8 => 'Agustus', 9 => 'September',
+            10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+        ];
+
+        $pengaturan = PengaturanSekolah::getSetting();
+
+        $startDate = Carbon::createFromDate($tahun, $bulan, 1)->startOfMonth()->toDateString();
+        $endDate = Carbon::createFromDate($tahun, $bulan, 1)->endOfMonth()->toDateString();
+
+        $query = Presensi::query()
+            ->with(['guru', 'shift'])
+            ->whereDate('tanggal', '>=', $startDate)
+            ->whereDate('tanggal', '<=', $endDate)
+            ->whereHas('guru', function ($q) use ($status, $shift, $search): void {
+                $q->where('aktif', true);
+
+                if ($status) {
+                    $q->where('status_kepegawaian', $status);
+                }
+
+                if ($shift) {
+                    $q->where('shift_id', $shift->id);
+                }
+
+                if ($search !== '') {
+                    $searchTerm = '%'.$search.'%';
+                    $q->where(function ($sub) use ($searchTerm): void {
+                        $sub->where('nama', 'like', $searchTerm)
+                            ->orWhere('nip', 'like', $searchTerm)
+                            ->orWhere('nuptk', 'like', $searchTerm)
+                            ->orWhere('jabatan', 'like', $searchTerm);
+                    });
+                }
+            })
+            ->orderBy('tanggal')
+            ->orderBy('guru_id');
+
+        $rincian = $query->get();
+
+        $stats = [
+            'total' => $rincian->count(),
+            'tepat_waktu' => $rincian->where('status_kehadiran', 'hadir')->where('status_masuk', 'tepat_waktu')->count(),
+            'terlambat' => $rincian->where('status_kehadiran', 'hadir')->where('status_masuk', 'terlambat')->count(),
+            'dinas_luar' => $rincian->where('status_kehadiran', 'dinas_luar')->count(),
+            'sakit' => $rincian->where('status_kehadiran', 'sakit')->count(),
+            'izin' => $rincian->where('status_kehadiran', 'izin')->count(),
+            'cuti' => $rincian->where('status_kehadiran', 'cuti')->count(),
+            'alpa' => $rincian->where('status_kehadiran', 'alpa')->count(),
+        ];
+
+        return view('laporan.cetak-rincian', [
+            'pengaturan' => $pengaturan,
+            'bulan' => $bulan,
+            'tahun' => $tahun,
+            'namaBulan' => $daftarBulan[$bulan] ?? 'Bulan',
+            'statusKepegawaian' => $statusKepegawaian,
+            'shift' => $shift,
+            'search' => $search,
+            'rincian' => $rincian,
+            'stats' => $stats,
         ]);
     }
 }

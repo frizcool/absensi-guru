@@ -219,19 +219,32 @@
         .detail-pagination button:hover:not(:disabled) { border-color: var(--detail-accent); background: var(--detail-accent-soft); }
         .detail-pagination button:disabled { opacity: .45; cursor: not-allowed; }
         .detail-pagination span { min-width: 82px; color: var(--detail-muted); text-align: center; font-size: 12px; font-variant-numeric: tabular-nums; }
-        @page { size: landscape; margin: 12mm; }
+        @page { size: landscape; margin: 10mm; }
         @media print {
-            body { background: #ffffff !important; }
-            .fi-sidebar, .fi-topbar, .fi-header, .fi-breadcrumbs,
-            .detail-filters, .detail-actions, .detail-table-footer { display: none !important; }
-            .fi-main, .fi-main-ctn, .fi-page, .fi-page-content, .fi-page-header {
+            html, body {
+                overflow: visible !important;
+                height: auto !important;
+                min-height: 0 !important;
+                background: #ffffff !important;
+            }
+            .fi-layout, .fi-main-ctn, .fi-main, .fi-page, .fi-page-content, .fi-page-header {
                 visibility: visible !important;
                 opacity: 1 !important;
                 transform: none !important;
                 animation: none !important;
                 transition: none !important;
+                overflow: visible !important;
+                height: auto !important;
+                min-height: 0 !important;
+                max-height: none !important;
+                display: block !important;
+                width: 100% !important;
+                max-width: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
             }
-            .fi-main, .fi-main-ctn, .fi-page, .fi-page-content { width: 100% !important; max-width: none !important; padding: 0 !important; margin: 0 !important; }
+            .fi-sidebar, .fi-topbar, .fi-header, .fi-breadcrumbs, .fi-sidebar-close-overlay,
+            .detail-filters, .detail-actions, .detail-table-footer { display: none !important; }
             .attendance-detail { gap: 10px; color: #111827; }
             .detail-heading { display: block; padding: 0 0 10px; border-bottom: 2px solid #111827; }
             .detail-eyebrow { margin-bottom: 4px; color: #111827; }

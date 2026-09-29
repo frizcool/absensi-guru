@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Filament\Pages\LaporanPresensiPage;
+use App\Filament\Pages\RincianPresensiPage;
 use App\Models\Guru;
 use App\Models\Presensi;
 use App\Models\Shift;
@@ -294,5 +295,59 @@ class LaporanPresensiTest extends TestCase
 
         $response->assertOk();
         $this->assertSame(60, substr_count($response->getContent(), 'class="detail-row"'));
+    }
+
+    public function test_cetak_rincian_pdf_route_renders_correctly_with_filters(): void
+    {
+        $this->actingAs($this->admin);
+
+        Presensi::create([
+            'guru_id' => $this->guru->id,
+            'shift_id' => $this->shift->id,
+            'tanggal' => '2026-09-01',
+            'jam_masuk' => '2026-09-01 06:55:00',
+            'jam_pulang' => '2026-09-01 14:05:00',
+            'status_masuk' => 'tepat_waktu',
+            'status_kehadiran' => 'hadir',
+            'keterangan' => 'Hadir tepat waktu',
+        ]);
+
+        $url = route('laporan.cetak-rincian', [
+            'bulan' => 9,
+            'tahun' => 2026,
+            'statusKepegawaian' => 'semua',
+            'search' => '',
+        ]);
+
+        $response = $this->get($url);
+
+        $response->assertOk()
+            ->assertSee('LAPORAN RINCIAN PRESENSI &amp; JAM KERJA HARIAN GURU', false)
+            ->assertSee('September 2026')
+            ->assertSee('Budi Santoso, S.Pd')
+            ->assertSee('06:55')
+            ->assertSee('14:05')
+            ->assertSee('7j 10m')
+            ->assertSee('Hadir tepat waktu');
+    }
+
+    public function test_rincian_presensi_page_url_cetak_points_to_dedicated_route(): void
+    {
+        $this->actingAs($this->admin);
+        Filament::setCurrentPanel(Filament::getPanel('admin'));
+
+        Livewire::test(RincianPresensiPage::class)
+            ->set('bulan', 9)
+            ->set('tahun', 2026)
+            ->set('statusKepegawaian', 'pns')
+            ->set('shiftId', $this->shift->id)
+            ->set('search', 'Budi')
+            ->assertSee(route('laporan.cetak-rincian', [
+                'bulan' => 9,
+                'tahun' => 2026,
+                'statusKepegawaian' => 'pns',
+                'shiftId' => $this->shift->id,
+                'search' => 'Budi',
+            ]));
     }
 }
