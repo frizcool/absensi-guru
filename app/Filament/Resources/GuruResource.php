@@ -140,7 +140,7 @@ class GuruResource extends Resource
                             ->disabled()
                             ->dehydrated(false)
                             ->placeholder('Belum ada perangkat terdaftar')
-                            ->helperText('Otomatis terkunci saat guru pertama kali melakukan presensi jika fitur binding aktif.'),
+                            ->helperText('Otomatis terkunci saat guru pertama kali presensi. Jika guru ganti HP, gunakan tombol "Reset HP" di tabel atau bagian atas halaman edit ini.'),
                     ]),
 
                 Section::make('Pola Shift Mingguan (Senin - Minggu)')
@@ -387,6 +387,27 @@ class GuruResource extends Resource
                             Notification::make()
                                 ->title('Sinkronisasi Akun Berhasil')
                                 ->body(count($records).' akun guru telah diperbarui dengan password standar NIP.')
+                                ->success()
+                                ->send();
+                        }),
+                    BulkAction::make('bulkResetDevice')
+                        ->label('Reset Ikatan Perangkat HP')
+                        ->icon('heroicon-o-device-phone-mobile')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->modalHeading('Reset Ikatan Perangkat Terpilih')
+                        ->modalDescription('Apakah Anda yakin ingin melepas ikatan HP untuk guru-guru yang dipilih? Guru yang bersangkutan dapat mendaftarkan HP barunya pada saat presensi berikutnya.')
+                        ->action(function (Collection $records) {
+                            $count = 0;
+                            foreach ($records as $guru) {
+                                if ($guru->device_id) {
+                                    $guru->resetDeviceId();
+                                    $count++;
+                                }
+                            }
+                            Notification::make()
+                                ->title('Reset Perangkat Berhasil')
+                                ->body("Ikatan perangkat {$count} guru berhasil dilepas.")
                                 ->success()
                                 ->send();
                         }),
