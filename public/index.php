@@ -13,6 +13,19 @@ if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php'))
 // Register the Composer autoloader...
 require __DIR__.'/../vendor/autoload.php';
 
+// Pembersihan cache darurat untuk Shared Hosting / Hostinger tanpa akses SSH
+if (isset($_GET['clear_cache']) || isset($_GET['refresh_cache'])) {
+    $cacheDir = __DIR__.'/../bootstrap/cache';
+    if (is_dir($cacheDir)) {
+        foreach (glob($cacheDir.'/*.php') as $file) {
+            @unlink($file);
+        }
+        foreach (glob($cacheDir.'/filament/panels/*.php') as $file) {
+            @unlink($file);
+        }
+    }
+}
+
 // Bootstrap Laravel and handle the request...
 /** @var Application $app */
 $app = require_once __DIR__.'/../bootstrap/app.php';
