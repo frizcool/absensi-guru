@@ -28,3 +28,9 @@ Thumbs.db
 *.zip
 *.tar.gz
 scratch*
+*.sqlite
+*.sqlite3
+*.sqlite-journal
+/database/*.sqlite
+/database/*.sqlite3
+/database/*.sqlite-journal
