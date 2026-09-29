@@ -163,12 +163,61 @@ class RincianPresensiPage extends Page
                     $query->where(function (Builder $query) use ($searchTerm): void {
                         $query->where('nama', 'like', $searchTerm)
                             ->orWhere('nip', 'like', $searchTerm)
+                            ->orWhere('nuptk', 'like', $searchTerm)
                             ->orWhere('jabatan', 'like', $searchTerm);
                     });
                 }
             })
             ->orderBy('tanggal')
             ->orderBy('guru_id');
+    }
+
+    public function resetFilters(): void
+    {
+        $this->bulan = (int) now()->month;
+        $this->tahun = (int) now()->year;
+        $this->statusKepegawaian = 'semua';
+        $this->shiftId = null;
+        $this->search = '';
+        $this->resetPage();
+    }
+
+    public function getHasActiveFiltersProperty(): bool
+    {
+        return $this->bulan !== (int) now()->month
+            || $this->tahun !== (int) now()->year
+            || $this->statusKepegawaian !== 'semua'
+            || $this->shiftId !== null
+            || $this->search !== '';
+    }
+
+    public function getStatistikKehadiranProperty(): array
+    {
+        $base = $this->getRincianQuery();
+
+        $stats = (clone $base)
+            ->selectRaw("
+                COUNT(*) as total,
+                SUM(CASE WHEN status_kehadiran = 'hadir' AND status_masuk = 'tepat_waktu' THEN 1 ELSE 0 END) as tepat_waktu,
+                SUM(CASE WHEN status_kehadiran = 'hadir' AND status_masuk = 'terlambat' THEN 1 ELSE 0 END) as terlambat,
+                SUM(CASE WHEN status_kehadiran = 'dinas_luar' THEN 1 ELSE 0 END) as dinas_luar,
+                SUM(CASE WHEN status_kehadiran = 'sakit' THEN 1 ELSE 0 END) as sakit,
+                SUM(CASE WHEN status_kehadiran = 'izin' THEN 1 ELSE 0 END) as izin,
+                SUM(CASE WHEN status_kehadiran = 'cuti' THEN 1 ELSE 0 END) as cuti,
+                SUM(CASE WHEN status_kehadiran = 'alpa' THEN 1 ELSE 0 END) as alpa
+            ")
+            ->first();
+
+        return [
+            'total' => (int) ($stats->total ?? 0),
+            'tepat_waktu' => (int) ($stats->tepat_waktu ?? 0),
+            'terlambat' => (int) ($stats->terlambat ?? 0),
+            'dinas_luar' => (int) ($stats->dinas_luar ?? 0),
+            'sakit' => (int) ($stats->sakit ?? 0),
+            'izin' => (int) ($stats->izin ?? 0),
+            'cuti' => (int) ($stats->cuti ?? 0),
+            'alpa' => (int) ($stats->alpa ?? 0),
+        ];
     }
 
     public function getUrlLaporanProperty(): string
