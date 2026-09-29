@@ -27,6 +27,8 @@ class RincianPresensiPage extends Page
 
     protected static ?string $title = 'Rincian Jam Presensi Harian';
 
+    protected static ?string $slug = 'rincian-presensi-page';
+
     protected string $view = 'filament.pages.rincian-presensi-page';
 
     public int $bulan;

@@ -366,12 +366,24 @@ class LaporanPresensiPage extends Page
 
     public function getUrlRincianProperty(): string
     {
-        return RincianPresensiPage::getUrl([
-            'bulan' => $this->bulan,
-            'tahun' => $this->tahun,
-            'statusKepegawaian' => $this->statusKepegawaian,
-            'shiftId' => $this->shiftId,
-            'search' => $this->search,
-        ], panel: 'admin');
+        try {
+            return RincianPresensiPage::getUrl([
+                'bulan' => $this->bulan,
+                'tahun' => $this->tahun,
+                'statusKepegawaian' => $this->statusKepegawaian,
+                'shiftId' => $this->shiftId,
+                'search' => $this->search,
+            ], panel: 'admin');
+        } catch (\Throwable) {
+            $params = http_build_query(array_filter([
+                'bulan' => $this->bulan,
+                'tahun' => $this->tahun,
+                'statusKepegawaian' => $this->statusKepegawaian !== 'semua' ? $this->statusKepegawaian : null,
+                'shiftId' => $this->shiftId,
+                'search' => $this->search !== '' ? $this->search : null,
+            ], fn ($val) => $val !== null && $val !== ''));
+
+            return url('/sekolahku/panel/rincian-presensi-page'.($params ? '?'.$params : ''));
+        }
     }
 }

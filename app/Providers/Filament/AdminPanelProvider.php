@@ -2,6 +2,9 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\LaporanPresensiPage;
+use App\Filament\Pages\PengaturanSekolahPage;
+use App\Filament\Pages\RincianPresensiPage;
 use App\Filament\Widgets\AdminExecutiveOverviewWidget;
 use App\Filament\Widgets\AnomaliPresensiWidget;
 use App\Filament\Widgets\GuruTerbaruPresensiWidget;
@@ -84,6 +87,9 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
                 Dashboard::class,
+                LaporanPresensiPage::class,
+                RincianPresensiPage::class,
+                PengaturanSekolahPage::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
