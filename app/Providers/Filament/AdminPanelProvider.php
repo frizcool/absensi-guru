@@ -2,7 +2,9 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\BackupRestorePage;
 use App\Filament\Pages\LaporanPresensiPage;
+use App\Filament\Pages\LogMonitoringPage;
 use App\Filament\Pages\PengaturanSekolahPage;
 use App\Filament\Pages\RincianPresensiPage;
 use App\Filament\Widgets\AdminExecutiveOverviewWidget;
@@ -90,6 +92,8 @@ class AdminPanelProvider extends PanelProvider
                 LaporanPresensiPage::class,
                 RincianPresensiPage::class,
                 PengaturanSekolahPage::class,
+                LogMonitoringPage::class,
+                BackupRestorePage::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([

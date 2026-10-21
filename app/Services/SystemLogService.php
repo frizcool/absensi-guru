@@ -20,7 +20,7 @@ class SystemLogService
             return [];
         }
 
-        $files = File::glob($logPath . '/*.log');
+        $files = File::glob($logPath.'/*.log');
         $result = [];
 
         // Sort latest modified first
@@ -31,7 +31,7 @@ class SystemLogService
         foreach ($files as $file) {
             $basename = basename($file);
             $size = round(filesize($file) / 1024, 2);
-            $sizeStr = $size > 1024 ? round($size / 1024, 2) . ' MB' : $size . ' KB';
+            $sizeStr = $size > 1024 ? round($size / 1024, 2).' MB' : $size.' KB';
             $result[$basename] = "{$basename} ({$sizeStr})";
         }
 
@@ -59,8 +59,8 @@ class SystemLogService
 
         $fileSize = filesize($filePath);
         $fileSizeFormatted = $fileSize > 1048576
-            ? round($fileSize / 1048576, 2) . ' MB'
-            : round($fileSize / 1024, 2) . ' KB';
+            ? round($fileSize / 1048576, 2).' MB'
+            : round($fileSize / 1024, 2).' KB';
 
         $lastModified = date('Y-m-d H:i:s', filemtime($filePath));
 

@@ -37,7 +37,7 @@ class BackupService
             return [];
         }
 
-        $files = File::glob($this->backupDir . '/*.zip');
+        $files = File::glob($this->backupDir.'/*.zip');
         $backups = [];
 
         // Sort latest first
@@ -49,11 +49,11 @@ class BackupService
             $filename = basename($filePath);
             $size = filesize($filePath);
             $sizeFormatted = $size > 1048576
-                ? round($size / 1048576, 2) . ' MB'
-                : round($size / 1024, 2) . ' KB';
+                ? round($size / 1048576, 2).' MB'
+                : round($size / 1024, 2).' KB';
 
             $meta = null;
-            $zip = new ZipArchive();
+            $zip = new ZipArchive;
             if ($zip->open($filePath) === true) {
                 $metaContent = $zip->getFromName('backup-meta.json');
                 if ($metaContent) {
@@ -95,7 +95,7 @@ class BackupService
         $filename = "backup_{$type}_{$timestamp}_{$random}.zip";
         $filePath = "{$this->backupDir}/{$filename}";
 
-        $zip = new ZipArchive();
+        $zip = new ZipArchive;
         if ($zip->open($filePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
             throw new \RuntimeException("Gagal membuat arsip cadangan zip di: {$filePath}");
         }
@@ -131,7 +131,7 @@ class BackupService
                 foreach ($files as $file) {
                     if (! $file->isDir()) {
                         $realPath = $file->getRealPath();
-                        $relativePath = 'storage/' . substr($realPath, strlen($publicStoragePath) + 1);
+                        $relativePath = 'storage/'.substr($realPath, strlen($publicStoragePath) + 1);
                         $zip->addFile($realPath, str_replace('\\', '/', $relativePath));
                         $filesCount++;
                     }
@@ -157,8 +157,8 @@ class BackupService
 
         $size = filesize($filePath);
         $sizeFormatted = $size > 1048576
-            ? round($size / 1048576, 2) . ' MB'
-            : round($size / 1024, 2) . ' KB';
+            ? round($size / 1048576, 2).' MB'
+            : round($size / 1024, 2).' KB';
 
         ActivityLog::record(
             action: 'BACKUP_CREATE',
@@ -199,7 +199,7 @@ class BackupService
         // SAFETY FIRST: Create automatic safety snapshot of current database
         $safetySnapshot = $this->createSafetySnapshot();
 
-        $zip = new ZipArchive();
+        $zip = new ZipArchive;
         if ($zip->open($filePath) !== true) {
             throw new \RuntimeException("Berkas arsip ZIP cadangan rusak atau tidak dapat dibuka: {$filename}");
         }
@@ -268,7 +268,7 @@ class BackupService
         ActivityLog::record(
             action: 'BACKUP_RESTORE',
             module: 'Backup',
-            description: "Super Admin memulihkan cadangan: {$filename} (" . implode(', ', $restoredItems) . ')',
+            description: "Super Admin memulihkan cadangan: {$filename} (".implode(', ', $restoredItems).')',
             properties: [
                 'filename' => $filename,
                 'restored_items' => $restoredItems,
@@ -279,7 +279,7 @@ class BackupService
 
         return [
             'success' => true,
-            'message' => 'Cadangan berhasil dipulihkan: ' . implode(', ', $restoredItems),
+            'message' => 'Cadangan berhasil dipulihkan: '.implode(', ', $restoredItems),
             'safety_snapshot' => $safetySnapshot['filename'] ?? null,
         ];
     }
@@ -355,7 +355,7 @@ class BackupService
         $filename = "safety_snapshot_{$timestamp}.zip";
         $filePath = "{$this->backupDir}/{$filename}";
 
-        $zip = new ZipArchive();
+        $zip = new ZipArchive;
         if ($zip->open($filePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
             $dbDriver = config('database.default');
             if ($dbDriver === 'sqlite') {
@@ -389,7 +389,7 @@ class BackupService
     protected function generateSqlDump(): string
     {
         $output = "-- Absensi Guru Database Dump\n";
-        $output .= '-- Generated: ' . date('Y-m-d H:i:s') . "\n\n";
+        $output .= '-- Generated: '.date('Y-m-d H:i:s')."\n\n";
 
         try {
             $tables = DB::connection()->getDoctrineSchemaManager()->listTableNames();
@@ -412,7 +412,7 @@ class BackupService
                         return 'NULL';
                     }
 
-                    return "'" . addslashes((string) $val) . "'";
+                    return "'".addslashes((string) $val)."'";
                 }, array_values($array));
 
                 $output .= sprintf(

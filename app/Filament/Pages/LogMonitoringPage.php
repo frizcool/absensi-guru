@@ -20,6 +20,8 @@ class LogMonitoringPage extends Page
 
     protected static ?string $navigationLabel = 'Monitoring Log';
 
+    protected static ?string $slug = 'monitoring-log';
+
     protected static ?string $title = 'Pusat Monitoring Log & Audit Sistem';
 
     protected string $view = 'filament.pages.log-monitoring';
@@ -176,7 +178,7 @@ class LogMonitoringPage extends Page
         $query = ActivityLog::query()->latest('id');
 
         if (! empty($this->activitySearch)) {
-            $search = '%' . trim($this->activitySearch) . '%';
+            $search = '%'.trim($this->activitySearch).'%';
             $query->where(function ($q) use ($search) {
                 $q->where('description', 'like', $search)
                     ->orWhere('user_name', 'like', $search)
