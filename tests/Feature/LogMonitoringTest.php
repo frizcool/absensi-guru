@@ -102,7 +102,7 @@ class LogMonitoringTest extends TestCase
 
         Livewire::test(LogMonitoringPage::class)
             ->call('viewActivityDetail', $log->id)
-            ->assertSee('Detail Log Aktivitas #'.$log->id)
+            ->assertSee('Detail Audit #'.$log->id)
             ->assertSee('Memperbarui koordinat GPS')
             ->assertSee('150')
             ->call('closeActivityDetail')
