@@ -2,9 +2,14 @@
 
 namespace App\Providers;
 
+use App\Listeners\LogAuthenticationActivity;
 use App\Models\Guru;
 use App\Observers\GuruObserver;
 use App\Policies\RolePolicy;
+use Illuminate\Auth\Events\Failed;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
@@ -44,5 +49,9 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Guru::observe(GuruObserver::class);
+
+        Event::listen(Login::class, [LogAuthenticationActivity::class, 'handleLogin']);
+        Event::listen(Logout::class, [LogAuthenticationActivity::class, 'handleLogout']);
+        Event::listen(Failed::class, [LogAuthenticationActivity::class, 'handleFailed']);
     }
 }
