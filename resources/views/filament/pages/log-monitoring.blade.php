@@ -6,280 +6,533 @@
     @endphp
 
     <style>
-        .lm-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+        :root {
+            --adm-bg: #ffffff;
+            --adm-card-bg: #ffffff;
+            --adm-border: #e2e8f0;
+            --adm-ink: #0f172a;
+            --adm-muted: #64748b;
+            --adm-subtle: #f8fafc;
+            --adm-primary: #059669;
+            --adm-primary-hover: #047857;
+            --adm-accent-soft: rgba(5, 150, 105, 0.08);
+            --adm-accent-border: rgba(5, 150, 105, 0.25);
         }
 
-        .lm-stat-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 14px;
-            padding: 16px 20px;
+        .dark, html.dark, .fi-theme-dark {
+            --adm-bg: #111827;
+            --adm-card-bg: #182234;
+            --adm-border: #1f2937;
+            --adm-ink: #f8fafc;
+            --adm-muted: #94a3b8;
+            --adm-subtle: #111827;
+            --adm-primary: #10b981;
+            --adm-primary-hover: #059669;
+            --adm-accent-soft: rgba(16, 185, 129, 0.12);
+            --adm-accent-border: rgba(16, 185, 129, 0.3);
+        }
+
+        .adm-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            color: var(--adm-ink);
+            font-family: inherit;
+        }
+
+        /* SVG SIZING ENFORCEMENT */
+        .adm-wrapper svg {
+            display: inline-block;
+            vertical-align: middle;
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        /* STATS GRID */
+        .adm-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+        }
+        @media (max-width: 1024px) {
+            .adm-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 640px) {
+            .adm-stats-grid { grid-template-columns: 1fr; }
+        }
+
+        .adm-stat-card {
+            background: var(--adm-card-bg);
+            border: 1px solid var(--adm-border);
+            border-radius: 12px;
+            padding: 16px 18px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            gap: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+            border-left: 4px solid var(--adm-primary);
         }
-        .lm-stat-card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-        }
-        .dark .lm-stat-card {
-            background: #111827;
-            border-color: #1f2937;
-            box-shadow: none;
+        .adm-stat-card-blue { border-left-color: #0284c7; }
+        .adm-stat-card-rose { border-left-color: #e11d48; }
+        .adm-stat-card-purple { border-left-color: #8b5cf6; }
+
+        .adm-stat-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
         }
 
-        .lm-icon-box {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
+        .adm-stat-label {
+            font-size: 11px;
+            font-weight: 750;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--adm-muted);
+            white-space: nowrap;
+        }
+
+        .adm-stat-value {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--adm-ink);
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        .adm-stat-hint {
+            font-size: 11px;
+            color: var(--adm-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .adm-stat-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
         }
+        .adm-stat-icon svg {
+            width: 22px;
+            height: 22px;
+        }
 
-        .lm-tab-container {
+        /* SEGMENTED TAB SWITCHER */
+        .adm-tab-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .adm-tab-pill-box {
             display: inline-flex;
-            background: #f1f5f9;
+            background: var(--adm-subtle);
+            border: 1px solid var(--adm-border);
             padding: 4px;
-            border-radius: 12px;
+            border-radius: 10px;
             gap: 4px;
         }
-        .dark .lm-tab-container {
-            background: #1e293b;
-        }
 
-        .lm-tab-btn {
+        .adm-tab-btn {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 18px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #64748b;
-            transition: all 0.2s ease;
+            gap: 7px;
+            padding: 7px 15px;
+            border-radius: 7px;
+            font-size: 12.5px;
+            font-weight: 700;
             cursor: pointer;
             border: none;
             background: transparent;
+            color: var(--adm-muted);
+            transition: all 0.15s ease;
         }
-        .dark .lm-tab-btn {
-            color: #94a3b8;
+        .adm-tab-btn.active {
+            background: var(--adm-card-bg);
+            color: var(--adm-ink);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
         }
-
-        .lm-tab-btn.active {
-            background: #ffffff;
-            color: #0f172a;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-        }
-        .dark .lm-tab-btn.active {
-            background: #0f172a;
-            color: #f8fafc;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        .adm-tab-btn svg {
+            width: 16px;
+            height: 16px;
         }
 
-        .lm-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            text-align: left;
-            font-size: 13px;
-        }
-        .lm-table th {
-            background: #f8fafc;
-            color: #475569;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+        /* TOOLBAR */
+        .adm-toolbar {
+            background: var(--adm-card-bg);
+            border: 1px solid var(--adm-border);
+            border-radius: 12px;
             padding: 12px 16px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .dark .lm-table th {
-            background: #182234;
-            color: #94a3b8;
-            border-bottom-color: #1f2937;
-        }
-        .lm-table td {
-            padding: 14px 16px;
-            border-bottom: 1px solid #f1f5f9;
-            vertical-align: middle;
-        }
-        .dark .lm-table td {
-            border-bottom-color: #1e293b;
-        }
-        .lm-table tbody tr:hover {
-            background: #f8fafc;
-        }
-        .dark .lm-table tbody tr:hover {
-            background: #182234;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
         }
 
-        .lm-badge {
+        .adm-toolbar-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+        }
+        @media (max-width: 1024px) {
+            .adm-toolbar-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 640px) {
+            .adm-toolbar-grid { grid-template-columns: 1fr; }
+        }
+
+        .adm-field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .adm-field-label {
+            font-size: 10.5px;
+            font-weight: 750;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--adm-muted);
+        }
+
+        .adm-input, .adm-select {
+            width: 100%;
+            height: 36px;
+            padding: 0 10px;
+            background: var(--adm-card-bg);
+            border: 1px solid var(--adm-border);
+            border-radius: 8px;
+            font-size: 12px;
+            color: var(--adm-ink);
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.15s ease;
+        }
+        .adm-input:focus, .adm-select:focus {
+            border-color: var(--adm-primary);
+        }
+
+        /* BUTTONS */
+        .adm-btn {
             display: inline-flex;
             align-items: center;
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-size: 11px;
+            justify-content: center;
+            gap: 7px;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 12px;
             font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border: 1px solid transparent;
+            text-decoration: none;
+            line-height: 1.2;
+        }
+        .adm-btn svg {
+            width: 15px;
+            height: 15px;
+        }
+
+        .adm-btn-emerald {
+            background: #059669;
+            color: #ffffff !important;
+            border-color: #047857;
+        }
+        .adm-btn-emerald:hover { background: #047857; }
+
+        .adm-btn-secondary {
+            background: var(--adm-card-bg);
+            border-color: var(--adm-border);
+            color: var(--adm-ink) !important;
+        }
+        .adm-btn-secondary:hover {
+            background: var(--adm-subtle);
+        }
+
+        .adm-btn-danger-soft {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #b91c1c !important;
+        }
+        .adm-btn-danger-soft:hover {
+            background: #fee2e2;
+        }
+
+        .adm-btn-icon {
+            padding: 5px 8px;
+            border-radius: 6px;
+            border: 1px solid var(--adm-border);
+            background: var(--adm-card-bg);
+            color: var(--adm-ink);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11.5px;
+            font-weight: 700;
+        }
+        .adm-btn-icon:hover {
+            background: var(--adm-subtle);
+        }
+        .adm-btn-icon svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* TABLE SHELL */
+        .adm-table-shell {
+            background: var(--adm-card-bg);
+            border: 1px solid var(--adm-border);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+        }
+
+        .adm-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
+            text-align: left;
+        }
+
+        .adm-table th {
+            background: var(--adm-subtle);
+            color: var(--adm-muted);
+            font-size: 11px;
+            font-weight: 750;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 11px 16px;
+            border-bottom: 1px solid var(--adm-border);
+            white-space: nowrap;
+        }
+
+        .adm-table td {
+            padding: 11px 16px;
+            border-bottom: 1px solid var(--adm-border);
+            vertical-align: middle;
+            color: var(--adm-ink);
+        }
+        .adm-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .adm-table tbody tr:hover {
+            background: var(--adm-subtle);
+        }
+
+        .adm-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 7px;
+            border-radius: 5px;
+            font-size: 10.5px;
+            font-weight: 750;
             letter-spacing: 0.02em;
+            white-space: nowrap;
+        }
+        .adm-pill-emerald { background: #dcfce7; color: #15803d; }
+        .adm-pill-blue { background: #e0f2fe; color: #0369a1; }
+        .adm-pill-purple { background: #f3e8ff; color: #7e22ce; }
+        .adm-pill-amber { background: #fef3c7; color: #b45309; }
+        .adm-pill-rose { background: #ffe4e6; color: #be123c; }
+        .adm-pill-gray { background: #f1f5f9; color: #475569; }
+
+        /* MODAL DIALOGS */
+        .adm-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .adm-modal-box {
+            background: var(--adm-card-bg);
+            border: 1px solid var(--adm-border);
+            border-radius: 14px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            color: var(--adm-ink);
+        }
+
+        .adm-modal-header {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--adm-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--adm-subtle);
+            font-size: 13.5px;
+            font-weight: 750;
+        }
+
+        .adm-modal-body {
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            font-size: 12.5px;
+            max-height: 75vh;
+            overflow-y: auto;
+        }
+
+        .adm-modal-footer {
+            padding: 12px 18px;
+            border-top: 1px solid var(--adm-border);
+            background: var(--adm-subtle);
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
         }
     </style>
 
-    <div class="lm-wrapper">
-        <!-- 1. STATS METRICS (Clean 4-column layout) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <!-- Metric 1: Aktivitas Hari Ini -->
-            <div class="lm-stat-card">
-                <div class="flex flex-col">
-                    <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Aktivitas Hari Ini</span>
-                    <span class="text-2xl font-bold text-gray-900 dark:text-white mt-1">{{ number_format($stats['activity_today']) }}</span>
-                    <span class="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium mt-1">Audit log tercatat</span>
+    <div class="adm-wrapper">
+        <!-- 1. STATS METRICS -->
+        <div class="adm-stats-grid">
+            <div class="adm-stat-card">
+                <div class="adm-stat-info">
+                    <span class="adm-stat-label">Aktivitas Hari Ini</span>
+                    <span class="adm-stat-value">{{ number_format($stats['activity_today']) }}</span>
+                    <span class="adm-stat-hint">Log aktivitas sistem</span>
                 </div>
-                <div class="lm-icon-box bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
-                    <x-heroicon-o-clipboard-document-list class="w-6 h-6" />
+                <div class="adm-stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #059669;">
+                    <x-heroicon-o-clipboard-document-list />
                 </div>
             </div>
 
-            <!-- Metric 2: Autentikasi Hari Ini -->
-            <div class="lm-stat-card">
-                <div class="flex flex-col">
-                    <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Login Hari Ini</span>
-                    <div class="flex items-baseline space-x-2 mt-1">
-                        <span class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ $stats['login_success_today'] }}</span>
-                        <span class="text-xs text-gray-400">/</span>
-                        <span class="text-sm font-bold {{ $stats['login_failed_today'] > 0 ? 'text-rose-500' : 'text-gray-400' }}">
+            <div class="adm-stat-card adm-stat-card-blue">
+                <div class="adm-stat-info">
+                    <span class="adm-stat-label">Login Hari Ini</span>
+                    <span class="adm-stat-value">
+                        {{ $stats['login_success_today'] }} <span style="font-size: 13px; font-weight: 600; color: var(--adm-muted);">/</span>
+                        <span style="font-size: 14px; color: {{ $stats['login_failed_today'] > 0 ? '#e11d48' : 'var(--adm-muted)' }}; font-weight: 700;">
                             {{ $stats['login_failed_today'] }} Gagal
                         </span>
-                    </div>
-                    <span class="text-[11px] text-gray-500 dark:text-gray-400 font-medium mt-1">Akses akun pengguna</span>
+                    </span>
+                    <span class="adm-stat-hint">Aktivitas autentikasi akun</span>
                 </div>
-                <div class="lm-icon-box bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
-                    <x-heroicon-o-shield-check class="w-6 h-6" />
+                <div class="adm-stat-icon" style="background: rgba(2, 132, 199, 0.1); color: #0284c7;">
+                    <x-heroicon-o-shield-check />
                 </div>
             </div>
 
-            <!-- Metric 3: Error Sistem Terdeteksi -->
-            <div class="lm-stat-card">
-                <div class="flex flex-col">
-                    <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Error Sistem</span>
-                    <span class="text-2xl font-bold {{ $stats['system_errors'] > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-gray-900 dark:text-white' }} mt-1">
+            <div class="adm-stat-card adm-stat-card-rose">
+                <div class="adm-stat-info">
+                    <span class="adm-stat-label">Error Sistem Terdeteksi</span>
+                    <span class="adm-stat-value" style="color: {{ $stats['system_errors'] > 0 ? '#e11d48' : 'var(--adm-ink)' }};">
                         {{ number_format($stats['system_errors']) }}
                     </span>
-                    <span class="text-[11px] {{ $stats['system_errors'] > 0 ? 'text-rose-500 font-semibold' : 'text-emerald-600' }} mt-1">
-                        {{ $stats['system_errors'] > 0 ? 'Perlu perhatian admin' : 'Sistem beroperasi normal' }}
+                    <span class="adm-stat-hint" style="color: {{ $stats['system_errors'] > 0 ? '#e11d48' : '#059669' }}; font-weight: 600;">
+                        {{ $stats['system_errors'] > 0 ? 'Perlu tindakan admin' : 'Sistem beroperasi normal' }}
                     </span>
                 </div>
-                <div class="lm-icon-box {{ $stats['system_errors'] > 0 ? 'bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400' : 'bg-gray-100 text-gray-500 dark:bg-gray-800' }}">
-                    <x-heroicon-o-bug-ant class="w-6 h-6" />
+                <div class="adm-stat-icon" style="background: rgba(225, 29, 72, 0.1); color: #e11d48;">
+                    <x-heroicon-o-bug-ant />
                 </div>
             </div>
 
-            <!-- Metric 4: Berkas Log & Status -->
-            <div class="lm-stat-card">
-                <div class="flex flex-col">
-                    <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Ukuran Berkas Log</span>
-                    <span class="text-2xl font-bold text-gray-900 dark:text-white mt-1">{{ $stats['log_file_size'] }}</span>
-                    <span class="text-[11px] text-gray-400 truncate max-w-[140px] mt-1" title="{{ $stats['last_modified'] }}">
-                        Ubah: {{ $stats['last_modified'] }}
-                    </span>
+            <div class="adm-stat-card adm-stat-card-purple">
+                <div class="adm-stat-info">
+                    <span class="adm-stat-label">Ukuran Berkas Log</span>
+                    <span class="adm-stat-value">{{ $stats['log_file_size'] }}</span>
+                    <span class="adm-stat-hint">Diperbarui: {{ $stats['last_modified'] }}</span>
                 </div>
-                <div class="lm-icon-box bg-purple-50 text-purple-600 dark:bg-purple-950/50 dark:text-purple-400">
-                    <x-heroicon-o-server-stack class="w-6 h-6" />
+                <div class="adm-stat-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+                    <x-heroicon-o-server-stack />
                 </div>
             </div>
         </div>
 
-        <!-- 2. SEGMENTED TAB SWITCHER -->
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div class="lm-tab-container">
+        <!-- 2. TAB SWITCHER & ACTIONS -->
+        <div class="adm-tab-bar">
+            <div class="adm-tab-pill-box">
                 <button
                     type="button"
                     wire:click="setTab('activity')"
-                    class="lm-tab-btn {{ $activeTab === 'activity' ? 'active' : '' }}"
+                    class="adm-tab-btn {{ $activeTab === 'activity' ? 'active' : '' }}"
                 >
-                    <x-heroicon-o-user-group class="w-4 h-4" />
-                    <span>Log Aktivitas Pengguna (Audit Trail)</span>
+                    <x-heroicon-o-user-group />
+                    <span>Log Aktivitas Pengguna</span>
                 </button>
 
                 <button
                     type="button"
                     wire:click="setTab('system')"
-                    class="lm-tab-btn {{ $activeTab === 'system' ? 'active' : '' }}"
+                    class="adm-tab-btn {{ $activeTab === 'system' ? 'active' : '' }}"
                 >
-                    <x-heroicon-o-command-line class="w-4 h-4" />
-                    <span>Log Sistem & Error Laravel</span>
+                    <x-heroicon-o-command-line />
+                    <span>Log Sistem &amp; Error Laravel</span>
                     @if($stats['system_errors'] > 0)
-                        <span class="ml-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">
-                            {{ $stats['system_errors'] }}
-                        </span>
+                        <span class="adm-pill adm-pill-rose" style="margin-left: 4px;">{{ $stats['system_errors'] }}</span>
                     @endif
                 </button>
             </div>
 
-            <!-- Contextual Quick Action -->
+            <!-- Quick Action Contextual -->
             @if ($activeTab === 'activity')
                 <button
                     type="button"
                     wire:click="clearOldActivityLogs(30)"
-                    wire:confirm="Hapus catatan audit log aktivitas yang berusia lebih dari 30 hari?"
-                    class="inline-flex items-center px-3.5 py-2 text-xs font-semibold rounded-xl text-rose-700 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200 dark:border-rose-900/60 transition"
+                    wire:confirm="Hapus catatan audit log aktivitas yang lebih dari 30 hari?"
+                    class="adm-btn adm-btn-danger-soft"
                 >
-                    <x-heroicon-o-trash class="w-4 h-4 mr-1.5" />
-                    Bersihkan Log > 30 Hari
+                    <x-heroicon-o-trash />
+                    <span>Bersihkan Log &gt; 30 Hari</span>
                 </button>
             @else
-                <div class="flex items-center space-x-2">
-                    <button
-                        type="button"
-                        wire:click="downloadSystemLog"
-                        class="inline-flex items-center px-3.5 py-2 text-xs font-semibold rounded-xl text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/60 transition"
-                    >
-                        <x-heroicon-o-arrow-down-tray class="w-4 h-4 mr-1.5" />
-                        Unduh File
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <button type="button" wire:click="downloadSystemLog" class="adm-btn adm-btn-secondary">
+                        <x-heroicon-o-arrow-down-tray />
+                        <span>Unduh File</span>
                     </button>
                     <button
                         type="button"
                         wire:click="clearSystemLog"
-                        wire:confirm="PERINGATAN: Berkas log ini akan dikosongkan secara permanen. Lanjutkan?"
-                        class="inline-flex items-center px-3.5 py-2 text-xs font-semibold rounded-xl text-rose-700 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200 dark:border-rose-900/60 transition"
+                        wire:confirm="PERINGATAN: Berkas log ini akan dikosongkan permanen. Lanjutkan?"
+                        class="adm-btn adm-btn-danger-soft"
                     >
-                        <x-heroicon-o-trash class="w-4 h-4 mr-1.5" />
-                        Kosongkan
+                        <x-heroicon-o-trash />
+                        <span>Kosongkan Log</span>
                     </button>
                 </div>
             @endif
         </div>
 
-        <!-- 3. TAB CONTENT -->
+        <!-- 3. TAB 1: ACTIVITY LOGS -->
         @if ($activeTab === 'activity')
             @php $activityLogs = $this->getActivityLogs(); @endphp
-            <div class="space-y-4">
+            <div style="display: flex; flex-direction: column; gap: 14px;">
                 <!-- Filter Toolbar -->
-                <div class="bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                        <!-- Search Input -->
-                        <div class="relative">
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Cari Aktivitas</label>
+                <div class="adm-toolbar">
+                    <div class="adm-toolbar-grid">
+                        <div class="adm-field-group">
+                            <span class="adm-field-label">Pencarian</span>
                             <input
-                                wire:model.live.debounce.300ms="activitySearch"
                                 type="text"
-                                placeholder="Deskripsi, nama, atau IP..."
-                                class="w-full text-xs rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 h-9"
+                                wire:model.live.debounce.300ms="activitySearch"
+                                class="adm-input"
+                                placeholder="Cari deskripsi, user, IP..."
                             />
                         </div>
 
-                        <!-- Modul Select -->
-                        <div>
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Modul</label>
-                            <select
-                                wire:model.live="activityModule"
-                                class="w-full text-xs rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 h-9"
-                            >
+                        <div class="adm-field-group">
+                            <span class="adm-field-label">Modul</span>
+                            <select wire:model.live="activityModule" class="adm-select">
                                 <option value="all">Semua Modul</option>
                                 @foreach($filterOptions['modules'] as $mod)
                                     <option value="{{ $mod }}">{{ $mod }}</option>
@@ -287,13 +540,9 @@
                             </select>
                         </div>
 
-                        <!-- Aksi Select -->
-                        <div>
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Tipe Aksi</label>
-                            <select
-                                wire:model.live="activityAction"
-                                class="w-full text-xs rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 h-9"
-                            >
+                        <div class="adm-field-group">
+                            <span class="adm-field-label">Aksi</span>
+                            <select wire:model.live="activityAction" class="adm-select">
                                 <option value="all">Semua Aksi</option>
                                 @foreach($filterOptions['actions'] as $act)
                                     <option value="{{ $act }}">{{ $act }}</option>
@@ -301,15 +550,11 @@
                             </select>
                         </div>
 
-                        <!-- Periode Select -->
-                        <div>
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Periode Waktu</label>
-                            <select
-                                wire:model.live="activityPeriod"
-                                class="w-full text-xs rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 h-9"
-                            >
+                        <div class="adm-field-group">
+                            <span class="adm-field-label">Periode Waktu</span>
+                            <select wire:model.live="activityPeriod" class="adm-select">
                                 <option value="all">Semua Waktu</option>
-                                <option value="today">Hari Ini Saja</option>
+                                <option value="today">Hari Ini</option>
                                 <option value="7_days">7 Hari Terakhir</option>
                                 <option value="30_days">30 Hari Terakhir</option>
                             </select>
@@ -317,82 +562,78 @@
                     </div>
                 </div>
 
-                <!-- Table Card -->
-                <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="lm-table">
+                <!-- Table Shell -->
+                <div class="adm-table-shell">
+                    <div style="overflow-x: auto; width: 100%;">
+                        <table class="adm-table">
                             <thead>
                                 <tr>
                                     <th style="width: 130px;">Waktu</th>
-                                    <th style="width: 170px;">Pengguna</th>
+                                    <th style="width: 160px;">Pengguna</th>
                                     <th style="width: 110px;">Modul</th>
                                     <th style="width: 120px;">Aksi</th>
                                     <th>Deskripsi Kejadian</th>
-                                    <th style="width: 130px;">IP Address</th>
-                                    <th style="width: 80px;" class="text-center">Detail</th>
+                                    <th style="width: 120px;">Alamat IP</th>
+                                    <th style="width: 80px; text-align: center;">Detail</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($activityLogs as $log)
                                     <tr>
                                         <td>
-                                            <div class="font-semibold text-gray-800 dark:text-gray-200 text-xs">{{ $log->created_at->format('d/m/Y') }}</div>
-                                            <div class="font-mono text-[11px] text-gray-500">{{ $log->created_at->format('H:i:s') }}</div>
+                                            <div style="font-weight: 700; font-size: 12px;">{{ $log->created_at->format('d/m/Y') }}</div>
+                                            <div style="font-family: monospace; font-size: 11px; color: var(--adm-muted);">{{ $log->created_at->format('H:i:s') }}</div>
                                         </td>
                                         <td>
-                                            <div class="font-semibold text-gray-900 dark:text-white text-xs truncate max-w-[150px]">{{ $log->user_name ?? 'Sistem' }}</div>
+                                            <div style="font-weight: 700; font-size: 12px;">{{ $log->user_name ?? 'Sistem' }}</div>
                                             @if($log->user_role)
-                                                <span class="inline-block mt-0.5 px-1.5 py-0.2 rounded text-[10px] font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
-                                                    {{ $log->user_role }}
-                                                </span>
+                                                <span class="adm-pill adm-pill-gray" style="margin-top: 2px;">{{ $log->user_role }}</span>
                                             @endif
                                         </td>
                                         <td>
-                                            <span class="font-semibold text-gray-700 dark:text-gray-300 text-xs">
-                                                {{ $log->module }}
-                                            </span>
+                                            <span style="font-weight: 700; font-size: 12px;">{{ $log->module }}</span>
                                         </td>
                                         <td>
                                             @php
-                                                $actionClass = match($log->action) {
-                                                    'LOGIN' => 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300',
-                                                    'LOGOUT' => 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
-                                                    'LOGIN_FAILED' => 'bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300',
-                                                    'CREATE', 'BACKUP_CREATE' => 'bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300',
-                                                    'UPDATE', 'SETTINGS_UPDATE' => 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300',
-                                                    'DELETE', 'BACKUP_DELETE' => 'bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-300',
-                                                    'BACKUP_RESTORE' => 'bg-purple-100 text-purple-800 dark:bg-purple-950/60 dark:text-purple-300',
-                                                    default => 'bg-slate-100 text-slate-800',
+                                                $pillClass = match($log->action) {
+                                                    'LOGIN' => 'adm-pill-emerald',
+                                                    'LOGOUT' => 'adm-pill-gray',
+                                                    'LOGIN_FAILED' => 'adm-pill-rose',
+                                                    'CREATE', 'BACKUP_CREATE' => 'adm-pill-blue',
+                                                    'UPDATE', 'SETTINGS_UPDATE' => 'adm-pill-amber',
+                                                    'DELETE', 'BACKUP_DELETE' => 'adm-pill-rose',
+                                                    'BACKUP_RESTORE' => 'adm-pill-purple',
+                                                    default => 'adm-pill-gray',
                                                 };
                                             @endphp
-                                            <span class="lm-badge {{ $actionClass }}">
-                                                {{ $log->action }}
-                                            </span>
+                                            <span class="adm-pill {{ $pillClass }}">{{ $log->action }}</span>
                                         </td>
                                         <td>
-                                            <div class="text-xs text-gray-800 dark:text-gray-200 line-clamp-2">
-                                                {{ $log->description }}
-                                            </div>
+                                            <div style="font-size: 12px; line-height: 1.4;">{{ $log->description }}</div>
                                         </td>
                                         <td>
-                                            <span class="font-mono text-xs text-gray-600 dark:text-gray-400">{{ $log->ip_address ?? '-' }}</span>
+                                            <span style="font-family: monospace; font-size: 11.5px; color: var(--adm-muted);">{{ $log->ip_address ?? '-' }}</span>
                                         </td>
-                                        <td class="text-center">
+                                        <td style="text-align: center;">
                                             <button
                                                 type="button"
                                                 wire:click="viewActivityDetail({{ $log->id }})"
-                                                class="inline-flex items-center justify-center p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/50 transition"
+                                                class="adm-btn-icon"
                                                 title="Lihat Detail Payload"
                                             >
-                                                <x-heroicon-o-eye class="w-4 h-4" />
+                                                <x-heroicon-o-eye />
+                                                <span>Detail</span>
                                             </button>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="py-12 text-center text-gray-500 dark:text-gray-400">
-                                            <x-heroicon-o-inbox class="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                                            <div>Tidak ada catatan log aktivitas yang cocok.</div>
+                                        <td colspan="7" style="padding: 40px; text-align: center; color: var(--adm-muted);">
+                                            <div style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                                                <x-heroicon-o-inbox style="width: 32px; height: 32px; opacity: 0.4;" />
+                                                <div style="font-weight: 700; font-size: 13px;">Tidak Ada Catatan Log</div>
+                                                <div style="font-size: 11.5px;">Coba sesuaikan filter pencarian Anda di atas.</div>
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforelse
@@ -402,21 +643,21 @@
 
                     <!-- Pagination -->
                     @if($activityLogs->hasPages())
-                        <div class="p-3.5 border-t border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-                            <span class="text-gray-500">
+                        <div style="padding: 12px 16px; border-top: 1px solid var(--adm-border); background: var(--adm-subtle); display: flex; align-items: center; justify-content: space-between; font-size: 12px;">
+                            <span style="color: var(--adm-muted);">
                                 Menampilkan {{ $activityLogs->firstItem() ?? 0 }} - {{ $activityLogs->lastItem() ?? 0 }} dari {{ $activityLogs->total() }} catatan
                             </span>
-                            <div class="flex items-center space-x-1.5">
+                            <div style="display: flex; align-items: center; gap: 6px;">
                                 @if(!$activityLogs->onFirstPage())
-                                    <button wire:click="setActivityPage({{ $activityLogs->currentPage() - 1 }})" class="px-2.5 py-1 rounded-lg border bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 shadow-sm">
+                                    <button wire:click="setActivityPage({{ $activityLogs->currentPage() - 1 }})" class="adm-btn adm-btn-secondary" style="padding: 4px 10px; font-size: 11px;">
                                         Sebelumnya
                                     </button>
                                 @endif
-                                <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 font-bold">
+                                <span class="adm-pill adm-pill-emerald">
                                     {{ $activityLogs->currentPage() }} / {{ $activityLogs->lastPage() }}
                                 </span>
                                 @if($activityLogs->hasMorePages())
-                                    <button wire:click="setActivityPage({{ $activityLogs->currentPage() + 1 }})" class="px-2.5 py-1 rounded-lg border bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 shadow-sm">
+                                    <button wire:click="setActivityPage({{ $activityLogs->currentPage() + 1 }})" class="adm-btn adm-btn-secondary" style="padding: 4px 10px; font-size: 11px;">
                                         Selanjutnya
                                     </button>
                                 @endif
@@ -427,19 +668,16 @@
             </div>
         @endif
 
-        <!-- TAB 2: SYSTEM LOGS -->
+        <!-- 4. TAB 2: SYSTEM LOGS -->
         @if ($activeTab === 'system')
             @php $systemLogs = $this->getSystemLogs(); @endphp
-            <div class="space-y-4">
-                <!-- Toolbar -->
-                <div class="bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div>
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Pilih Berkas</label>
-                            <select
-                                wire:model.live="selectedLogFile"
-                                class="w-full text-xs rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 h-9 font-mono"
-                            >
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+                <!-- Filter Toolbar -->
+                <div class="adm-toolbar">
+                    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;">
+                        <div class="adm-field-group">
+                            <span class="adm-field-label">Berkas Log</span>
+                            <select wire:model.live="selectedLogFile" class="adm-select" style="font-family: monospace;">
                                 @forelse($logFiles as $fileKey => $fileLabel)
                                     <option value="{{ $fileKey }}">{{ $fileLabel }}</option>
                                 @empty
@@ -448,12 +686,9 @@
                             </select>
                         </div>
 
-                        <div>
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Level Minimal</label>
-                            <select
-                                wire:model.live="systemLogLevel"
-                                class="w-full text-xs rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 h-9"
-                            >
+                        <div class="adm-field-group">
+                            <span class="adm-field-label">Level Minimal</span>
+                            <select wire:model.live="systemLogLevel" class="adm-select">
                                 <option value="ALL">Semua Level</option>
                                 <option value="ERROR">ERROR / CRITICAL</option>
                                 <option value="WARNING">WARNING</option>
@@ -462,71 +697,79 @@
                             </select>
                         </div>
 
-                        <div>
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Cari Kata Kunci</label>
+                        <div class="adm-field-group">
+                            <span class="adm-field-label">Kata Kunci</span>
                             <input
-                                wire:model.live.debounce.300ms="systemLogSearch"
                                 type="text"
-                                placeholder="Exception, kata kunci, file..."
-                                class="w-full text-xs rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 h-9"
+                                wire:model.live.debounce.300ms="systemLogSearch"
+                                class="adm-input"
+                                placeholder="Cari exception, pesan error..."
                             />
                         </div>
                     </div>
                 </div>
 
-                <!-- Table Card -->
-                <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-                    <div class="p-3 bg-gray-50 dark:bg-gray-750 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
-                        <span>Berkas: <strong class="font-mono text-gray-800 dark:text-gray-200">{{ $selectedLogFile }}</strong> ({{ $systemLogs['file_size'] }})</span>
-                        <span>Ditemukan: <strong class="text-gray-800 dark:text-gray-200">{{ count($systemLogs['entries']) }}</strong> entri</span>
+                <!-- Table Shell -->
+                <div class="adm-table-shell">
+                    <div style="padding: 10px 16px; background: var(--adm-subtle); border-bottom: 1px solid var(--adm-border); display: flex; justify-content: space-between; font-size: 11.5px; color: var(--adm-muted);">
+                        <span>Berkas: <strong style="font-family: monospace; color: var(--adm-ink);">{{ $selectedLogFile }}</strong> ({{ $systemLogs['file_size'] }})</span>
+                        <span>Ditemukan: <strong style="color: var(--adm-ink);">{{ count($systemLogs['entries']) }}</strong> entri</span>
                     </div>
 
-                    <div class="overflow-x-auto">
-                        <table class="lm-table">
+                    <div style="overflow-x: auto; width: 100%;">
+                        <table class="adm-table">
                             <thead>
                                 <tr>
                                     <th style="width: 150px;">Waktu</th>
                                     <th style="width: 90px;">Level</th>
                                     <th style="width: 70px;">Env</th>
-                                    <th>Pesan Log Exception</th>
-                                    <th style="width: 90px;" class="text-center">Trace</th>
+                                    <th>Pesan Exception / Error</th>
+                                    <th style="width: 90px; text-align: center;">Trace</th>
                                 </tr>
                             </thead>
-                            <tbody class="font-mono text-xs">
+                            <tbody>
                                 @forelse($systemLogs['entries'] as $entry)
                                     @php
-                                        $levelClass = match($entry['level']) {
-                                            'EMERGENCY', 'ALERT', 'CRITICAL', 'ERROR' => 'bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300',
-                                            'WARNING' => 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300',
-                                            'NOTICE', 'INFO' => 'bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300',
-                                            'DEBUG' => 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
-                                            default => 'bg-slate-100 text-slate-800',
+                                        $pillClass = match($entry['level']) {
+                                            'EMERGENCY', 'ALERT', 'CRITICAL', 'ERROR' => 'adm-pill-rose',
+                                            'WARNING' => 'adm-pill-amber',
+                                            'NOTICE', 'INFO' => 'adm-pill-blue',
+                                            'DEBUG' => 'adm-pill-gray',
+                                            default => 'adm-pill-gray',
                                         };
                                     @endphp
                                     <tr>
-                                        <td class="text-gray-500 whitespace-nowrap">{{ $entry['date'] }}</td>
                                         <td>
-                                            <span class="lm-badge font-sans {{ $levelClass }}">{{ $entry['level'] }}</span>
+                                            <span style="font-family: monospace; font-size: 11.5px; color: var(--adm-muted);">{{ $entry['date'] }}</span>
                                         </td>
-                                        <td class="text-gray-400 uppercase text-[10px]">{{ $entry['env'] }}</td>
-                                        <td class="text-gray-800 dark:text-gray-200 break-words max-w-xl">
-                                            <div class="line-clamp-2">{{ $entry['message'] }}</div>
+                                        <td>
+                                            <span class="adm-pill {{ $pillClass }}">{{ $entry['level'] }}</span>
                                         </td>
-                                        <td class="text-center font-sans">
+                                        <td>
+                                            <span style="font-size: 10.5px; text-transform: uppercase; color: var(--adm-muted);">{{ $entry['env'] }}</span>
+                                        </td>
+                                        <td>
+                                            <div style="font-family: monospace; font-size: 11.5px; line-height: 1.4; word-break: break-all;">{{ $entry['message'] }}</div>
+                                        </td>
+                                        <td style="text-align: center;">
                                             <button
                                                 type="button"
                                                 wire:click="viewSystemLogDetail({{ $entry['id'] }})"
-                                                class="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-lg text-indigo-600 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:text-indigo-300 transition"
+                                                class="adm-btn-icon"
+                                                title="Lihat Stack Trace"
                                             >
-                                                Trace
+                                                <span>Trace</span>
                                             </button>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="py-12 text-center text-gray-500 dark:text-gray-400 font-sans">
-                                            <x-heroicon-o-check-circle class="w-8 h-8 mx-auto mb-2 text-emerald-500" />
-                                            <div>Tidak ada catatan log sistem yang ditemukan.</div>
+                                        <td colspan="5" style="padding: 40px; text-align: center; color: var(--adm-muted);">
+                                            <div style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                                                <x-heroicon-o-check-circle style="width: 32px; height: 32px; color: #059669; opacity: 0.8;" />
+                                                <div style="font-weight: 700; font-size: 13px;">Tidak Ada Catatan Log Error</div>
+                                                <div style="font-size: 11.5px;">Berkas log bersih atau sesuai kriteria filter.</div>
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforelse
@@ -540,62 +783,56 @@
         <!-- MODAL: Activity Detail -->
         @if ($selectedActivityId && $this->selectedActivity)
             @php $act = $this->selectedActivity; @endphp
-            <div class="fixed inset-0 z-50 overflow-y-auto bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-xl w-full border border-gray-200 dark:border-gray-700 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-                    <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50/80 dark:bg-gray-750">
-                        <div class="flex items-center space-x-2">
-                            <span class="lm-badge bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-                                {{ $act->action }}
-                            </span>
-                            <span class="text-sm font-bold text-gray-900 dark:text-white">Detail Audit #{{ $act->id }}</span>
+            <div class="adm-modal-backdrop">
+                <div class="adm-modal-box">
+                    <div class="adm-modal-header">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="adm-pill adm-pill-emerald">{{ $act->action }}</span>
+                            <span>Detail Audit #{{ $act->id }}</span>
                         </div>
-                        <button wire:click="closeActivityDetail" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
-                            <x-heroicon-o-x-mark class="w-5 h-5" />
+                        <button type="button" wire:click="closeActivityDetail" style="background: none; border: none; cursor: pointer; color: var(--adm-muted);">
+                            <x-heroicon-o-x-mark />
                         </button>
                     </div>
 
-                    <div class="p-5 space-y-4 max-h-[70vh] overflow-y-auto text-xs">
-                        <div class="grid grid-cols-2 gap-3 bg-gray-50 dark:bg-gray-700/30 p-3.5 rounded-xl border border-gray-100 dark:border-gray-700">
+                    <div class="adm-modal-body">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: var(--adm-subtle); padding: 12px; border-radius: 8px; border: 1px solid var(--adm-border);">
                             <div>
-                                <span class="text-[10px] text-gray-400 font-bold uppercase block">Pengguna</span>
-                                <span class="font-semibold text-gray-900 dark:text-white">{{ $act->user_name ?? 'Sistem' }}</span>
-                                <span class="text-gray-500 block text-[11px]">{{ $act->user_role ?? '-' }}</span>
+                                <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--adm-muted); display: block;">Pengguna</span>
+                                <span style="font-weight: 700;">{{ $act->user_name ?? 'Sistem' }}</span>
+                                <span style="font-size: 11px; color: var(--adm-muted); display: block;">{{ $act->user_role ?? '-' }}</span>
                             </div>
                             <div>
-                                <span class="text-[10px] text-gray-400 font-bold uppercase block">Waktu</span>
-                                <span class="font-semibold text-gray-900 dark:text-white">{{ $act->created_at->format('d/m/Y H:i:s') }}</span>
+                                <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--adm-muted); display: block;">Waktu Kejadian</span>
+                                <span style="font-weight: 700;">{{ $act->created_at->format('d/m/Y H:i:s') }}</span>
                             </div>
                             <div>
-                                <span class="text-[10px] text-gray-400 font-bold uppercase block">Modul</span>
-                                <span class="font-semibold text-gray-900 dark:text-white">{{ $act->module }}</span>
+                                <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--adm-muted); display: block;">Modul &amp; Aksi</span>
+                                <span style="font-weight: 700;">{{ $act->module }} / {{ $act->action }}</span>
                             </div>
                             <div>
-                                <span class="text-[10px] text-gray-400 font-bold uppercase block">Alamat IP</span>
-                                <span class="font-mono text-gray-900 dark:text-white">{{ $act->ip_address ?? '-' }}</span>
+                                <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--adm-muted); display: block;">Alamat IP</span>
+                                <span style="font-family: monospace; font-weight: 700;">{{ $act->ip_address ?? '-' }}</span>
                             </div>
                         </div>
 
                         <div>
-                            <span class="text-[10px] text-gray-400 font-bold uppercase block mb-1">Deskripsi</span>
-                            <div class="p-3 bg-white dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 text-gray-800 dark:text-gray-200 leading-relaxed">
+                            <span style="font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--adm-muted); display: block; margin-bottom: 4px;">Deskripsi</span>
+                            <div style="padding: 10px 12px; background: var(--adm-subtle); border-radius: 8px; border: 1px solid var(--adm-border); line-height: 1.4;">
                                 {{ $act->description }}
                             </div>
                         </div>
 
                         @if(!empty($act->properties))
                             <div>
-                                <span class="text-[10px] text-gray-400 font-bold uppercase block mb-1">Payload Perubahan</span>
-                                <pre class="p-3.5 bg-gray-900 text-emerald-400 rounded-xl font-mono text-[11px] overflow-x-auto max-h-52 border border-gray-800">{{ json_encode($act->properties, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}</pre>
+                                <span style="font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--adm-muted); display: block; margin-bottom: 4px;">Payload Perubahan Data</span>
+                                <pre style="padding: 12px; background: #0f172a; color: #34d399; border-radius: 8px; font-family: monospace; font-size: 11px; overflow-x: auto; max-height: 200px;">{{ json_encode($act->properties, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}</pre>
                             </div>
                         @endif
                     </div>
 
-                    <div class="p-3.5 border-t border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-750 flex justify-end">
-                        <button
-                            type="button"
-                            wire:click="closeActivityDetail"
-                            class="px-4 py-1.5 text-xs font-semibold rounded-xl bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:text-white transition"
-                        >
+                    <div class="adm-modal-footer">
+                        <button type="button" wire:click="closeActivityDetail" class="adm-btn adm-btn-secondary">
                             Tutup
                         </button>
                     </div>
@@ -606,42 +843,36 @@
         <!-- MODAL: System Log Trace -->
         @if ($selectedSystemLogId && $this->selectedSystemLog)
             @php $sys = $this->selectedSystemLog; @endphp
-            <div class="fixed inset-0 z-50 overflow-y-auto bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-3xl w-full border border-gray-200 dark:border-gray-700 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-                    <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50/80 dark:bg-gray-750">
-                        <div class="flex items-center space-x-2">
-                            <span class="lm-badge bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 font-mono">
-                                {{ $sys['level'] }}
-                            </span>
-                            <span class="text-xs font-mono text-gray-500">[{{ $sys['date'] }}] {{ $sys['env'] }}</span>
+            <div class="adm-modal-backdrop">
+                <div class="adm-modal-box" style="max-width: 720px;">
+                    <div class="adm-modal-header" style="background: rgba(225, 29, 72, 0.08); color: #be123c;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="adm-pill adm-pill-rose">{{ $sys['level'] }}</span>
+                            <span style="font-family: monospace; font-size: 11.5px;">[{{ $sys['date'] }}] {{ $sys['env'] }}</span>
                         </div>
-                        <button wire:click="closeSystemLogDetail" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
-                            <x-heroicon-o-x-mark class="w-5 h-5" />
+                        <button type="button" wire:click="closeSystemLogDetail" style="background: none; border: none; cursor: pointer; color: var(--adm-muted);">
+                            <x-heroicon-o-x-mark />
                         </button>
                     </div>
 
-                    <div class="p-5 space-y-4 max-h-[70vh] overflow-y-auto text-xs">
+                    <div class="adm-modal-body">
                         <div>
-                            <span class="text-[10px] text-gray-400 font-bold uppercase block mb-1">Pesan Exception</span>
-                            <div class="p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-xl font-mono text-rose-900 dark:text-rose-300 break-words">
+                            <span style="font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--adm-muted); display: block; margin-bottom: 4px;">Pesan Exception</span>
+                            <div style="padding: 10px 12px; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 8px; font-family: monospace; font-size: 11.5px; color: #9f1239; line-height: 1.4;">
                                 {{ $sys['message'] }}
                             </div>
                         </div>
 
                         @if(!empty($sys['trace']))
                             <div>
-                                <span class="text-[10px] text-gray-400 font-bold uppercase block mb-1">Stack Trace</span>
-                                <pre class="p-3.5 bg-gray-950 text-gray-300 rounded-xl font-mono text-[11px] overflow-x-auto max-h-80 border border-gray-800 whitespace-pre-wrap leading-relaxed">{{ $sys['trace'] }}</pre>
+                                <span style="font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--adm-muted); display: block; margin-bottom: 4px;">Stack Trace</span>
+                                <pre style="padding: 12px; background: #0f172a; color: #e2e8f0; border-radius: 8px; font-family: monospace; font-size: 11px; overflow-x: auto; max-height: 320px; white-space: pre-wrap; line-height: 1.4;">{{ $sys['trace'] }}</pre>
                             </div>
                         @endif
                     </div>
 
-                    <div class="p-3.5 border-t border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-750 flex justify-end">
-                        <button
-                            type="button"
-                            wire:click="closeSystemLogDetail"
-                            class="px-4 py-1.5 text-xs font-semibold rounded-xl bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:text-white transition"
-                        >
+                    <div class="adm-modal-footer">
+                        <button type="button" wire:click="closeSystemLogDetail" class="adm-btn adm-btn-secondary">
                             Tutup
                         </button>
                     </div>
